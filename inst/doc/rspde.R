@@ -4,7 +4,11 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 library(rSPDE)
-require.nowarnings(INLA)
+run_inla <- identical(Sys.getenv("NOT_CRAN"), "true")
+if(run_inla){
+  run_inla <- run_inla&require.nowarnings(INLA)
+}
+
 set.seed(1)
 
 ## -----------------------------------------------------------------------------
@@ -148,37 +152,37 @@ lines(s, u)
 lines(s, u.krig$mean, col = 2)
 par(opar)
 
-## ---- eval = require.nowarnings(INLA)-----------------------------------------
-x <- seq(from = 0, to = 10, length.out = 70)
-mesh <- inla.mesh.create(lattice = inla.mesh.lattice(x = x, y = x), 
-                         extend = FALSE, refine = FALSE)
-fem <- inla.fmesher.smorg(mesh$loc, mesh$graph$tv, fem = 2,
-                         output = list("c0", "c1", "g1"))
-C <- fem$c0
-G <- fem$g1
+## ---- eval = run_inla---------------------------------------------------------
+#  x <- seq(from = 0, to = 10, length.out = 70)
+#  mesh <- inla.mesh.create(lattice = inla.mesh.lattice(x = x, y = x),
+#                           extend = FALSE, refine = FALSE)
+#  fem <- inla.fmesher.smorg(mesh$loc, mesh$graph$tv, fem = 2,
+#                           output = list("c0", "c1", "g1"))
+#  C <- fem$c0
+#  G <- fem$g1
 
-## ---- eval = require.nowarnings(INLA)-----------------------------------------
-kappa <- 0.5
-tau <- 1
-nu <- 0.5
-op <- spde.matern.operators(kappa = kappa, tau = tau, nu = nu, G = G, C = C, d = 2, m = 1)
+## ---- eval = run_inla---------------------------------------------------------
+#  kappa <- 0.5
+#  tau <- 1
+#  nu <- 0.5
+#  op <- spde.matern.operators(kappa = kappa, tau = tau, nu = nu, G = G, C = C, d = 2, m = 1)
 
-## ---- eval = require.nowarnings(INLA)-----------------------------------------
-u <- simulate(op)
-n.obs <- 4000
-obs.loc <- cbind(runif(n = n.obs, min = 0, max = 1), runif(n = n.obs, min = 0, max = 1))
-A <- inla.spde.make.A(mesh, loc = obs.loc)
-sigma.<- 0.1
-Y = as.vector(A %*% u + sigma.e*rnorm(n.obs))
+## ---- eval = run_inla---------------------------------------------------------
+#  u <- simulate(op)
+#  n.obs <- 4000
+#  obs.loc <- cbind(runif(n = n.obs, min = 0, max = 1), runif(n = n.obs, min = 0, max = 1))
+#  A <- inla.spde.make.A(mesh, loc = obs.loc)
+#  sigma.<- 0.1
+#  Y = as.vector(A %*% u + sigma.e*rnorm(n.obs))
 
-## ---- fig.show='hold',fig.height = 3.5, fig.width = 7, fig.align = "center",echo=FALSE, eval = require.nowarnings(INLA)----
-opar <- par(mfrow = c(1,2),mgp = c(1.2, 0.5, 0), mar = c(2,2,0.5,0.5) + 0.1)
-proj <- inla.mesh.projector(mesh, dims = c(70, 70))
-image(inla.mesh.project(proj, field = as.vector(u)),xlab="",ylab="",
-      cex.main = 0.8, cex.axis = 0.8, cex.lab = 0.8)
-plot(obs.loc[,1],obs.loc[,2],cex=0.2,pch=16,xlab="",ylab="",
-     cex.main = 0.8, cex.axis = 0.8, cex.lab = 0.8)
-par(opar)
+## ---- fig.show='hold',fig.height = 3.5, fig.width = 7, fig.align = "center",echo=FALSE, eval = run_inla----
+#  opar <- par(mfrow = c(1,2),mgp = c(1.2, 0.5, 0), mar = c(2,2,0.5,0.5) + 0.1)
+#  proj <- inla.mesh.projector(mesh, dims = c(70, 70))
+#  image(inla.mesh.project(proj, field = as.vector(u)),xlab="",ylab="",
+#        cex.main = 0.8, cex.axis = 0.8, cex.lab = 0.8)
+#  plot(obs.loc[,1],obs.loc[,2],cex=0.2,pch=16,xlab="",ylab="",
+#       cex.main = 0.8, cex.axis = 0.8, cex.lab = 0.8)
+#  par(opar)
 
 ## -----------------------------------------------------------------------------
 mlik <- function(theta, Y, G, C, A) {
@@ -186,13 +190,13 @@ mlik <- function(theta, Y, G, C, A) {
                               Y = Y, G = G, C = C, A = A, d = 2, m=1))
 }
 
-## ---- eval = require.nowarnings(INLA)-----------------------------------------
-theta0 = log(c(2, sqrt(var(Y)), 1,0.1*sqrt(var(Y))))
-pars <- optim(theta0, mlik, Y = Y, G = G, C = C, A = A, method = "L-BFGS-B")
-results <- data.frame(kappa = c(kappa, exp(pars$par[1])), 
-                      tau = c(tau, exp(pars$par[2])),
-                      nu = c(nu, exp(pars$par[3])),
-                      sigma.e = c(sigma.e, exp(pars$par[4])),
-                      row.names = c("True", "Estimate"))
-print(results)
+## ---- eval = run_inla---------------------------------------------------------
+#  theta0 = log(c(2, sqrt(var(Y)), 1,0.1*sqrt(var(Y))))
+#  pars <- optim(theta0, mlik, Y = Y, G = G, C = C, A = A, method = "L-BFGS-B")
+#  results <- data.frame(kappa = c(kappa, exp(pars$par[1])),
+#                        tau = c(tau, exp(pars$par[2])),
+#                        nu = c(nu, exp(pars$par[3])),
+#                        sigma.e = c(sigma.e, exp(pars$par[4])),
+#                        row.names = c("True", "Estimate"))
+#  print(results)
 
