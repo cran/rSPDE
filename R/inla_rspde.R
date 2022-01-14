@@ -319,7 +319,7 @@ utils::globalVariables(c("C", "C_inv", "C_inv_G", "G", "d", "loc", "n",
 
 #' @name rspde.matern
 #' @title Matern rSPDE model object for INLA
-#' @description Create an INLA object for a stationary Matern model with general 
+#' @description Creates an INLA object for a stationary Matern model with general 
 #' smoothness parameter.
 #' @param mesh The mesh to build the model. Should be an \code{inla.mesh} or
 #' an \code{inla.mesh.1d} object.
@@ -357,7 +357,7 @@ utils::globalVariables(c("C", "C_inv", "C_inv_G", "G", "d", "loc", "n",
 #' given by the \code{nu_upper_bound} argument. 
 #' 
 #' It is very important to notice that the larger the value of \code{nu_upper_bound}
-#' the larger the computational cost to fit the model. So, it is generally best
+#' the higher the computational cost to fit the model. So, it is generally best
 #' to initially fit a model with a small value of \code{nu_upper_bound} and increase it
 #' only if it is really needed (for instance, if the estimated smoothness parameter was
 #' very close to \code{nu_upper_bound}).
@@ -365,15 +365,12 @@ utils::globalVariables(c("C", "C_inv", "C_inv_G", "G", "d", "loc", "n",
 #' The following parameterization is used:
 #' \deqn{\log(\tau) = \theta_1,}
 #' \deqn{\log(\kappa) = \theta_2}
-#' and for \eqn{\theta_3}, if a beta prior is used, with the beta prior
-#' being taken on the interval \eqn{(0,\nu_{UB})}, where \eqn{\nu_{UB}} is
-#' \code{nu_upper_bound}, then the following parameterization
+#' and for \eqn{\theta_3} we can have a beta prior
+#' or a truncated lognormal prior distribution. In each case,
+#' the prior distribution has support on the interval \eqn{(0,\nu_{UB})}, where \eqn{\nu_{UB}} is
+#' \code{nu_upper_bound}. Then, the following parameterization
 #' is considered:
 #' \deqn{\log\Big(\frac{\nu}{\nu_{UB}-\nu}\Big) = \theta_3.}
-#' If a truncated lognormal prior is used, where the lognormal is truncated to
-#' the interval \eqn{(0,\nu_{UB})}, then the following parameterization
-#' is considered:
-#' \deqn{\log(\nu) = \theta_3.}
 #' 
 #' By default, an optimized version of this model is considered. The optimized
 #' version is generally much faster for larger datasets, however it takes more
@@ -390,7 +387,7 @@ utils::globalVariables(c("C", "C_inv", "C_inv_G", "G", "d", "loc", "n",
 #' 
 #' Finally, when considering a beta prior, the beta distribution will be parameterized
 #' in terms of its mean, say \eqn{\mu} and a precision parameter \eqn{\phi}, which
-#' is such that the variance of the beta distribution is given by \eqn{\mu(1-\mu)/(1+\phi)}. 
+#' is such that the variance of the beta distribution is given by \eqn{\mu(\nu_{UB}-\mu)/(1+\phi)}. 
 #' The mean of the beta prior is determined by the \code{prior.nu$mean}, whereas
 #' the precision parameter is determined by the \code{prior.nu$prec}. If \code{prior.nu$prec}
 #' is \code{NULL} (which is the default case), the precision parameter is taken
@@ -405,7 +402,8 @@ utils::globalVariables(c("C", "C_inv", "C_inv_G", "G", "d", "loc", "n",
 #' Hence, the higher the value of \code{nu.prec.inc} the more informative the prior is.
 #' 
 #' @examples 
-#' \donttest{
+#' \donttest{ #tryCatch version
+#' tryCatch({
 #' library(INLA)
 #' 
 #' #Organizing the data
@@ -453,6 +451,8 @@ utils::globalVariables(c("C", "C_inv", "C_inv_G", "G", "d", "loc", "n",
 #' 
 #' #The result
 #' summary(rspde_fit)
+#' #stable.tryCatch
+#' }, error = function(e){print("Could not run the example")})
 #' }
 #' 
 
@@ -815,8 +815,7 @@ if(is.null(prior.tau$sdlog)){
 #' optimized version of the precision matrix of the
 #' covariance-based rational SPDE approximation of a stationary Gaussian random
 #' fields on \eqn{R^d} with a Matern covariance function
-#' \deqn{C(h) = \frac{\sigma^2}{2^(\nu-1)\Gamma(\nu)}(\kappa h)^\nu K_\nu(\kappa h)}{C(h) =
-#' (\sigma^2/(2^(\nu-1)\Gamma(\nu))(\kappa h)^\nu K_\nu(\kappa h)}
+#' \deqn{C(h) = \frac{\sigma^2}{2^{\nu-1}\Gamma(\nu)}(\kappa h)^\nu K_\nu(\kappa h).}
 #' @param kappa Range parameter of the covariance function.
 #' @param tau Scale parameter of the covariance function.
 #' @param nu Shape parameter of the covariance function.
@@ -1096,8 +1095,7 @@ rspde.matern.precision = function(kappa, nu, tau=NULL, sigma=NULL, rspde_order, 
 #' @description \code{rspde.matern.precision.integer.opt} is used for computing the
 #' optimized version of the precision matrix of stationary Gaussian random
 #' fields on \eqn{R^d} with a Matern covariance function
-#' \deqn{C(h) = \frac{\sigma^2}{2^(\nu-1)\Gamma(\nu)}(\kappa h)^\nu K_\nu(\kappa h)}{C(h) =
-#' (\sigma^2/(2^(\nu-1)\Gamma(\nu))(\kappa h)^\nu K_\nu(\kappa h)},
+#' \deqn{C(h) = \frac{\sigma^2}{2^{\nu-1}\Gamma(\nu)}(\kappa h)^\nu K_\nu(\kappa h),}
 #' where \eqn{\alpha = \nu + d/2} is a natural number.
 #' @param kappa Range parameter of the covariance function.
 #' @param tau Scale parameter of the covariance function.
@@ -1109,7 +1107,13 @@ rspde.matern.precision = function(kappa, nu, tau=NULL, sigma=NULL, rspde_order, 
 #' @return The precision matrix
 #' @export
 
-rspde.matern.precision.integer.opt = function(kappa, nu, tau, d, fem_matrices, graph=NULL) {
+rspde.matern.precision.integer.opt = function(kappa, 
+                                              nu, 
+                                              tau, 
+                                              d, 
+                                              fem_matrices, 
+                                              graph=NULL) 
+  {
   
   beta = nu / 2 + d / 4
   
@@ -1232,7 +1236,8 @@ rspde.matern.precision.integer = function(kappa, nu, tau=NULL, sigma=NULL, dim, 
 #' @return The \eqn{A} matrix for rSPDE models.
 #' @export
 #' @examples
-#' \donttest{
+#' \donttest{ #tryCatch version
+#' tryCatch({
 #' library(INLA)
 #' 
 #' set.seed(123)
@@ -1243,6 +1248,8 @@ rspde.matern.precision.integer = function(kappa, nu, tau=NULL, sigma=NULL, dim, 
 #' max.edge = c(50, 500)
 #' )
 #' A <- rspde.make.A(mesh, loc = loc, rspde_order=3)
+#' #stable.tryCatch
+#' }, error = function(e){print("Could not run the example")})
 #' }
 rspde.make.A <- function(mesh=NULL,
                          loc = NULL,
@@ -1330,37 +1337,45 @@ rspde.make.A <- function(mesh=NULL,
 #' \item{name.repl}{Indices for replicates}
 #' @export
 #' @examples 
-#' \donttest{
+#' \donttest{ #tryCatch version
+#' tryCatch({
 #' library(INLA)
 #' set.seed(123)
 #' 
-#' loc <- matrix(runif(150 * 2), 150, 2)
-#' mesh <- inla.mesh.2d(loc = loc, max.edge = c(0.1, 0.5))
-#' rspde <- rspde.matern(mesh)
-#' index <- rspde.make.index(name = "spatial", n.spde = rspde$n.spde,
-#'                           n.repl = 2, dim = 2)
-#' spatial.A <- rspde.make.A(mesh=mesh, loc=loc,
-#'                           index = rep(1:nrow(loc), 2),
-#'                           repl = rep(1:2, each = nrow(loc))
-#' )
-#' y <- 10 + rnorm(150 * 2)
-#' stack <- inla.stack(
-#'   data = list(y = y),
-#'   A = list(spatial.A),
-#'   effects = list(c(index, list(intercept = 1))),
-#'   tag = "tag"
-#' )
-#' data <- inla.stack.data(stack, spde = rspde)
-#' formula <- y ~ -1 + intercept + f(spatial,
-#'                                   model = rspde,
-#'                                   replicate = spatial.repl
-#' )
-#' result <- inla(formula,
-#'                family = "gaussian", data = data,
-#'                control.predictor = list(A = inla.stack.A(stack))
-#' )
-#' result <- rspde.result(result, "spatial", rspde)
+#' m = 100
+#' loc_2d_mesh = matrix(runif(m*2),m,2)
+#' mesh_2d = inla.mesh.2d(loc=loc_2d_mesh,
+#'                        cutoff=0.05,
+#'                        max.edge=c(0.1,0.5) )
+#' sigma <- 0.01
+#' range <- 0.2
+#' nu <- 0.8
+#' kappa <- sqrt(8*nu)/range
+#' op <- matern.operators(mesh=mesh_2d,nu=nu,
+#'                        kappa=kappa,sigma=sigma,m=2)
+#' u <- simulate(op)
+#' A <- inla.spde.make.A(mesh=mesh_2d,
+#'                       loc=loc_2d_mesh)
+#' sigma.e <- 0.1
+#' y = A %*% u + rnorm(m) * sigma.e
+#' Abar <- rspde.make.A(mesh = mesh_2d, loc = loc_2d_mesh)
+#' mesh.index <- rspde.make.index(name = "field", mesh = mesh_2d)
+#' st.dat=inla.stack(data=list(y=as.vector(y)),
+#'                   A=Abar,
+#'                   effects=mesh.index)
+#' rspde_model <- rspde.matern(mesh = mesh_2d,
+#'                             nu_upper_bound = 1)
+#' f = y ~ -1 + f(field, model=rspde_model)
+#' rspde_fit = inla(f,
+#'       data=inla.stack.data(st.dat),
+#'       family="gaussian",
+#'       control.predictor=
+#'         list(A=inla.stack.A(st.dat)),
+#'       inla.mode = "experimental")
+#' result <- rspde.result(rspde_fit, "field", rspde_model)
 #' plot(result)
+#' #stable.tryCatch
+#' }, error = function(e){print("Could not run the example")})
 #' }
 
 rspde.make.index <- function(name, n.spde=NULL, n.group = 1,
@@ -1436,7 +1451,8 @@ rspde.make.index <- function(name, n.spde=NULL, n.group = 1,
 #' @return A sparse precision matrix.
 #' @export
 #' @examples 
-#' \donttest{
+#' \donttest{ #tryCatch version
+#' tryCatch({
 #' library(INLA)
 #' 
 #' set.seed(1)
@@ -1451,8 +1467,13 @@ rspde.make.index <- function(name, n.spde=NULL, n.group = 1,
 #' 
 #' rspde_model <- rspde.matern(mesh)
 #' prec <- rspde.precision(rspde_model, theta=log(c(1,3,1.2)))
+#' #stable.tryCatch
+#' }, error = function(e){print("Could not run the example")})
 #' }
-rspde.precision <- function(rspde, theta, optimized = FALSE){
+rspde.precision <- function(rspde, 
+                            theta, 
+                            optimized = FALSE)
+  {
   check_class_inla_rspde(rspde)
   stopifnot(is.logical(optimized))
   if(length(theta)!=length(rspde$f$rgeneric$definition(cmd="initial"))){
@@ -1506,37 +1527,46 @@ rspde.precision <- function(rspde, theta, optimized = FALSE){
 #' \item{summary.nu}{Summary statistics for nu}
 #' @export
 #' @examples
-#' \donttest{
+#' \donttest{ #tryCatch version
+#' tryCatch({
 #' library(INLA)
 #' set.seed(123)
 #' 
-#' loc <- matrix(runif(150 * 2), 150, 2)
-#' mesh <- inla.mesh.2d(loc = loc, max.edge = c(0.1, 0.5))
-#' rspde <- rspde.matern(mesh)
-#' index <- rspde.make.index(name = "spatial", n.spde = rspde$n.spde,
-#'                           n.repl = 2, dim = 2)
-#' spatial.A <- rspde.make.A(mesh=mesh, loc=loc,
-#'                           index = rep(1:nrow(loc), 2),
-#'                           repl = rep(1:2, each = nrow(loc))
-#' )
-#' y <- 10 + rnorm(150 * 2)
-#' stack <- inla.stack(
-#'   data = list(y = y),
-#'   A = list(spatial.A),
-#'   effects = list(c(index, list(intercept = 1))),
-#'   tag = "tag"
-#' )
-#' data <- inla.stack.data(stack, spde = rspde)
-#' formula <- y ~ -1 + intercept + f(spatial,
-#'                                   model = rspde,
-#'                                   replicate = spatial.repl
-#' )
-#' result <- inla(formula,
-#'                family = "gaussian", data = data,
-#'                control.predictor = list(A = inla.stack.A(stack))
-#' )
-#' result <- rspde.result(result, "spatial", rspde)
+#' m = 100
+#' loc_2d_mesh = matrix(runif(m*2),m,2)
+#' mesh_2d = inla.mesh.2d(loc=loc_2d_mesh,
+#'                        cutoff=0.05,
+#'                        max.edge=c(0.1,0.5) )
+#' sigma <- 0.01
+#' range <- 0.2
+#' nu <- 0.8
+#' kappa <- sqrt(8*nu)/range
+#' op <- matern.operators(mesh=mesh_2d,nu=nu,
+#'                        kappa=kappa,sigma=sigma,m=2)
+#' u <- simulate(op)
+#' A <- inla.spde.make.A(mesh=mesh_2d,
+#'                       loc=loc_2d_mesh)
+#' sigma.e <- 0.1
+#' y = A %*% u + rnorm(m) * sigma.e
+#' Abar <- rspde.make.A(mesh = mesh_2d, loc = loc_2d_mesh)
+#' mesh.index <- rspde.make.index(name = "field", mesh = mesh_2d)
+#' st.dat=inla.stack(data=list(y=as.vector(y)),
+#'                   A=Abar,
+#'                   effects=mesh.index)
+#' rspde_model <- rspde.matern(mesh = mesh_2d,
+#'                             nu_upper_bound = 1)
+#' f = y ~ -1 + f(field, model=rspde_model)
+#' rspde_fit = inla(f,
+#'       data=inla.stack.data(st.dat),
+#'       family="gaussian",
+#'       control.predictor=
+#'         list(A=inla.stack.A(st.dat)),
+#'       inla.mode = "experimental")
+#' result <- rspde.result(rspde_fit, "field", rspde_model)
+#' summary(result)
 #' plot(result)
+#' #stable.tryCatch
+#' }, error = function(e){print("Could not run the example")})
 #' }
 rspde.result <- function(inla, name, rspde, compute.summary=TRUE)
 {
@@ -1629,36 +1659,45 @@ return(result)
 #' @export
 #' @method plot rspde.result
 #' @examples 
-#' \donttest{
+#' \donttest{ #tryCatch version
+#' tryCatch({
 #' library(INLA)
 #' set.seed(123)
-#' loc <- matrix(runif(150 * 2), 150, 2)
-#' mesh <- inla.mesh.2d(loc = loc, max.edge = c(0.1, 0.5))
-#' rspde <- rspde.matern(mesh)
-#' index <- rspde.make.index(name = "spatial", n.spde = rspde$n.spde, 
-#' n.repl = 2, dim = 2)
-#' spatial.A <- rspde.make.A(mesh=mesh, loc=loc,
-#'                              index = rep(1:nrow(loc), 2),
-#'                              repl = rep(1:2, each = nrow(loc))
-#' )
-#' y <- 10 + rnorm(150 * 2)
-#' stack <- inla.stack(
-#'  data = list(y = y),
-#'  A = list(spatial.A),
-#'  effects = list(c(index, list(intercept = 1))),
-#'  tag = "tag"
-#' )
-#' data <- inla.stack.data(stack, spde = rspde)
-#' formula <- y ~ -1 + intercept + f(spatial,
-#'                                   model = rspde,
-#'                                  replicate = spatial.repl
-#' )
-#' result <- inla(formula,
-#'                family = "gaussian", data = data,
-#'                control.predictor = list(A = inla.stack.A(stack))
-#' )
-#' result <- rspde.result(result, "spatial", rspde)
+#' 
+#' m = 100
+#' loc_2d_mesh = matrix(runif(m*2),m,2)
+#' mesh_2d = inla.mesh.2d(loc=loc_2d_mesh,
+#'                        cutoff=0.05,
+#'                        max.edge=c(0.1,0.5) )
+#' sigma <- 0.01
+#' range <- 0.2
+#' nu <- 0.8
+#' kappa <- sqrt(8*nu)/range
+#' op <- matern.operators(mesh=mesh_2d,nu=nu,
+#'                        kappa=kappa,sigma=sigma,m=2)
+#' u <- simulate(op)
+#' A <- inla.spde.make.A(mesh=mesh_2d,
+#'                       loc=loc_2d_mesh)
+#' sigma.e <- 0.1
+#' y = A %*% u + rnorm(m) * sigma.e
+#' Abar <- rspde.make.A(mesh = mesh_2d, loc = loc_2d_mesh)
+#' mesh.index <- rspde.make.index(name = "field", mesh = mesh_2d)
+#' st.dat=inla.stack(data=list(y=as.vector(y)),
+#'                   A=Abar,
+#'                   effects=mesh.index)
+#' rspde_model <- rspde.matern(mesh = mesh_2d,
+#'                             nu_upper_bound = 1)
+#' f = y ~ -1 + f(field, model=rspde_model)
+#' rspde_fit = inla(f,
+#'       data=inla.stack.data(st.dat),
+#'       family="gaussian",
+#'       control.predictor=
+#'         list(A=inla.stack.A(st.dat)),
+#'       inla.mode = "experimental")
+#' result <- rspde.result(rspde_fit, "field", rspde_model)
 #' plot(result)
+#' #stable.tryCatch
+#' }, error = function(e){print("Could not run the example")})
 #' }
 plot.rspde.result <- function(x, which = c("tau","kappa","nu"),
          caption = list("Posterior density for tau",
@@ -1721,7 +1760,7 @@ plot.rspde.result <- function(x, which = c("tau","kappa","nu"),
 
 
 #' @name summary.rspde.result
-#' @title Summary for posteriors of field parameters for an \code{inla.rspde} model from a \code{rpsde.result} object
+#' @title Summary for posteriors of field parameters for an \code{inla.rspde} model from a \code{rspde.result} object
 #' @description Summary for posteriors of rSPDE field parameters in their original scales.
 #' @param object A \code{rspde.result} object.
 #' @param digits integer, used for number formatting with signif()
@@ -1731,39 +1770,50 @@ plot.rspde.result <- function(x, which = c("tau","kappa","nu"),
 #' @export
 #' @method summary rspde.result
 #' @examples
-#' \donttest{
+#' \donttest{ #tryCatch version
+#' tryCatch({
 #' library(INLA)
 #' set.seed(123)
 #' 
-#' loc <- matrix(runif(150 * 2), 150, 2)
-#' mesh <- inla.mesh.2d(loc = loc, max.edge = c(0.1, 0.5))
-#' rspde <- rspde.matern(mesh)
-#' index <- rspde.make.index(name = "spatial", n.spde = rspde$n.spde, 
-#' n.repl = 2, dim = 2)
-#' spatial.A <- rspde.make.A(mesh=mesh, loc=loc,
-#'                              index = rep(1:nrow(loc), 2),
-#'                              repl = rep(1:2, each = nrow(loc))
-#' )
-#' y <- 10 + rnorm(150 * 2)
-#' stack <- inla.stack(
-#'  data = list(y = y),
-#'  A = list(spatial.A),
-#'  effects = list(c(index, list(intercept = 1))),
-#'  tag = "tag"
-#' )
-#' data <- inla.stack.data(stack, spde = rspde)
-#' formula <- y ~ -1 + intercept + f(spatial,
-#'                                   model = rspde,
-#'                                  replicate = spatial.repl
-#' )
-#' result <- inla(formula,
-#'                family = "gaussian", data = data,
-#'                control.predictor = list(A = inla.stack.A(stack))
-#' )
-#' result <- rspde.result(result, "spatial", rspde)
+#' m = 100
+#' loc_2d_mesh = matrix(runif(m*2),m,2)
+#' mesh_2d = inla.mesh.2d(loc=loc_2d_mesh,
+#'                        cutoff=0.05,
+#'                        max.edge=c(0.1,0.5) )
+#' sigma <- 0.01
+#' range <- 0.2
+#' nu <- 0.8
+#' kappa <- sqrt(8*nu)/range
+#' op <- matern.operators(mesh=mesh_2d,nu=nu,
+#'                        kappa=kappa,sigma=sigma,m=2)
+#' u <- simulate(op)
+#' A <- inla.spde.make.A(mesh=mesh_2d,
+#'                       loc=loc_2d_mesh)
+#' sigma.e <- 0.1
+#' y = A %*% u + rnorm(m) * sigma.e
+#' Abar <- rspde.make.A(mesh = mesh_2d, loc = loc_2d_mesh)
+#' mesh.index <- rspde.make.index(name = "field", mesh = mesh_2d)
+#' st.dat=inla.stack(data=list(y=as.vector(y)),
+#'                   A=Abar,
+#'                   effects=mesh.index)
+#' rspde_model <- rspde.matern(mesh = mesh_2d,
+#'                             nu_upper_bound = 1)
+#' f = y ~ -1 + f(field, model=rspde_model)
+#' rspde_fit = inla(f,
+#'       data=inla.stack.data(st.dat),
+#'       family="gaussian",
+#'       control.predictor=
+#'         list(A=inla.stack.A(st.dat)),
+#'       inla.mode = "experimental")
+#' result <- rspde.result(rspde_fit, "field", rspde_model)
 #' summary(result)
+#' #stable.tryCatch
+#' }, error = function(e){print("Could not run the example")})
 #' }
-summary.rspde.result <- function(object,digits=6,...){
+#' 
+summary.rspde.result <- function(object,
+                                 digits=6,
+                                 ...){
   if(is.null(object$summary.tau)){
     warning("The summary was not computed, rerun rspde.result with compute.summary set to TRUE.")
   } else{
@@ -1787,7 +1837,7 @@ summary.rspde.result <- function(object,digits=6,...){
 #' @param nu The smoothness parameter. If \code{NULL}, it will be assumed that nu was estimated.
 #' @param rspde_order The order of the rational approximation.
 #' @param loc	Projection locations. Can be a matrix or a SpatialPoints or a SpatialPointsDataFrame object.
-#' @param field Basis function weights, one per mesh basis function, describing the function to be avaluated at the projection locationssFunction values for on the mesh
+#' @param field Basis function weights, one per mesh basis function, describing the function to be evaluated at the projection locations.
 #' @param projector A \code{rspde.mesh.projector} object.
 #' @param lattice An \code{inla.mesh.lattice} object.
 #' @param xlim X-axis limits for a lattice. For R2 meshes, defaults to covering the domain.

@@ -1,3 +1,10 @@
+# rSPDE 1.1.1
+* Adjusts on donttest examples for CRAN.
+
+# rSPDE 1.1.0
+* Minor typos on vignettes and man pages were corrected.
+* Some examples were changed to improve their numerical stability.
+
 # rSPDE 1.0.0
 * Implementation of the covariance-based rational approximation for stationary Matérn models.
 * R-INLA implementation of the rational SPDE approach
