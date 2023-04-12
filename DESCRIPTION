@@ -2,7 +2,7 @@ Package: rSPDE
 Type: Package
 Title: Rational Approximations of Fractional Stochastic Partial
         Differential Equations
-Version: 2.1.0
+Version: 2.2.0
 Authors@R: c(
     person("David", "Bolin", email = "davidbolin@gmail.com", role = c("cre", "aut")),
     person("Alexandre", "Simas", email = "alexandre.impa@gmail.com", role = "aut"),
@@ -16,7 +16,8 @@ URL: https://davidbolin.github.io/rSPDE/
 Encoding: UTF-8
 RoxygenNote: 7.2.3
 Suggests: R.rsp, rmarkdown, INLA (>= 22.12.14), testthat, rgdal,
-        ggplot2, lattice, splancs, optimParallel, inlabru, sn, viridis
+        ggplot2, lattice, splancs, optimParallel, inlabru (>= 2.7.0),
+        sn, viridis, scoringRules, doParallel, foreach
 Additional_repositories: https://inla.r-inla-download.org/R/testing
 BugReports: https://github.com/davidbolin/rSPDE/issues
 VignetteBuilder: R.rsp
@@ -24,6 +25,6 @@ NeedsCompilation: no
 Author: David Bolin [cre, aut],
   Alexandre Simas [aut],
   Finn Lindgren [ctb]
-Packaged: 2023-01-18 19:48:32 UTC; debusta
+Packaged: 2023-04-09 17:15:28 UTC; debusta
 Repository: CRAN
-Date/Publication: 2023-01-19 18:00:06 UTC
+Date/Publication: 2023-04-12 10:20:02 UTC

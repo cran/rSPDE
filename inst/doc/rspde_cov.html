@@ -12,7 +12,7 @@
 
 <meta name="author" content="David Bolin, Alexandre B. Simas, Zhen Xiong" />
 
-<meta name="date" content="2023-01-18" />
+<meta name="date" content="2023-04-07" />
 
 <title>Rational approximation with the rSPDE package</title>
 
@@ -363,7 +363,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1 class="title toc-ignore">Rational approximation with the rSPDE
 package</h1>
 <h4 class="author">David Bolin, Alexandre B. Simas, Zhen Xiong</h4>
-<h4 class="date">2023-01-18</h4>
+<h4 class="date">2023-04-07</h4>
 
 
 
@@ -759,7 +759,7 @@ guess for <code>sigma.e</code>.</p>
 ## Estimates 0.02283270 18.00965 0.8176277 0.3302515</code></pre>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Total time</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(time_optim)</span></code></pre></div>
-<pre><code>## Time difference of 17.36191 secs</code></pre>
+<pre><code>## Time difference of 11.84351 secs</code></pre>
 <p>We can also speed up the optimization by using the
 <code>optimParallel()</code> function from the
 <code>optimParallel</code> package. To such an end, we simply replace
@@ -803,7 +803,7 @@ set the number of cores we want to use:</p>
 ## Estimates 0.02283270 18.00965 0.8176277 0.3302515</code></pre>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Total time</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(time_optim)</span></code></pre></div>
-<pre><code>## Time difference of 13.19101 secs</code></pre>
+<pre><code>## Time difference of 8.033268 secs</code></pre>
 </div>
 <div id="kriging" class="section level3">
 <h3>Kriging</h3>
@@ -895,7 +895,7 @@ is a matrix with more than one column.</p>
 ## Estimates 0.02719025 17.3714 0.784712 0.2932504</code></pre>
 <div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Total time</span></span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(time_optim)</span></code></pre></div>
-<pre><code>## Time difference of 11.8331 secs</code></pre>
+<pre><code>## Time difference of 7.65992 secs</code></pre>
 </div>
 <div id="spatial-data-and-parameter-estimation" class="section level2">
 <h2>Spatial data and parameter estimation</h2>
@@ -1033,7 +1033,7 @@ logarithm of each parameter to avoid constrained optimization.</p>
 ## Estimate 0.05036810 22.72679 0.6382482 0.1004502</code></pre>
 <div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Total time</span></span>
 <span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(total_time)</span></code></pre></div>
-<pre><code>## Time difference of 18.22598 secs</code></pre>
+<pre><code>## Time difference of 11.21654 secs</code></pre>
 </div>
 <div id="an-example-with-a-non-stationary-model" class="section level2">
 <h2>An example with a non-stationary model</h2>
@@ -1190,7 +1190,7 @@ the choices <code>chebfun</code> and <code>chebfunLB</code>.</p>
 ## Estimate 0.05720811 22.23146 0.6068955 0.1004481</code></pre>
 <div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Total time</span></span>
 <span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(total_time)</span></code></pre></div>
-<pre><code>## Time difference of 56.33814 secs</code></pre>
+<pre><code>## Time difference of 39.10117 secs</code></pre>
 <p>Finally, we can check the type of rational approximation with the
 <code>rational.type()</code> function and assign a new type by using the
 <code>rational.type&lt;-()</code> function:</p>
@@ -1223,7 +1223,7 @@ with <code>brasil</code> rational approximation:</p>
 ## Estimate 0.06358789 21.85246 0.5804641 0.1004512</code></pre>
 <div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Total time</span></span>
 <span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(total_time)</span></code></pre></div>
-<pre><code>## Time difference of 25.27517 secs</code></pre>
+<pre><code>## Time difference of 22.31082 secs</code></pre>
 </div>
 <div id="references" class="section level2 unnumbered">
 <h2 class="unnumbered">References</h2>
