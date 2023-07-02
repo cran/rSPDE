@@ -12,7 +12,7 @@
 
 <meta name="author" content="David Bolin and Alexandre B. Simas" />
 
-<meta name="date" content="2023-05-24" />
+<meta name="date" content="2023-06-25" />
 
 <title>Operator-based rational approximation</title>
 
@@ -362,7 +362,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Operator-based rational approximation</h1>
 <h4 class="author">David Bolin and Alexandre B. Simas</h4>
-<h4 class="date">2023-05-24</h4>
+<h4 class="date">2023-06-25</h4>
 
 
 
@@ -879,8 +879,8 @@ we fit the model:</p>
 <span id="cb27-30"><a href="#cb27-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Number of function calls by &#39;optim&#39; = 60</span></span>
 <span id="cb27-31"><a href="#cb27-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Optimization method used in &#39;optim&#39; = L-BFGS-B</span></span>
 <span id="cb27-32"><a href="#cb27-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb27-33"><a href="#cb27-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Time used to:     fit the model =  3.24696 mins </span></span>
-<span id="cb27-34"><a href="#cb27-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   set up the parallelization = 1.39014 secs</span></span></code></pre></div>
+<span id="cb27-33"><a href="#cb27-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Time used to:     fit the model =  3.80614 mins </span></span>
+<span id="cb27-34"><a href="#cb27-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   set up the parallelization = 1.66979 secs</span></span></code></pre></div>
 <p>Let us compare the estimated results with the true values:</p>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">data.frame</span>(</span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">sigma =</span> <span class="fu">c</span>(sigma, fit_2d<span class="sc">$</span>matern_coeff<span class="sc">$</span>random_effects[<span class="dv">2</span>]), </span>
@@ -894,7 +894,7 @@ we fit the model:</p>
 <span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Total time</span></span>
 <span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(fit_2d<span class="sc">$</span>fitting_time)</span>
-<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Time difference of 3.246962 mins</span></span></code></pre></div>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Time difference of 3.806141 mins</span></span></code></pre></div>
 <p>Finally, we observe that we can use the <code>rational.order()</code>
 function, to check the order of the rational approximation of the
 <code>rSPDE</code> object, as well as to use the
@@ -941,8 +941,8 @@ function, to check the order of the rational approximation of the
 <span id="cb31-30"><a href="#cb31-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Number of function calls by &#39;optim&#39; = 67</span></span>
 <span id="cb31-31"><a href="#cb31-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Optimization method used in &#39;optim&#39; = L-BFGS-B</span></span>
 <span id="cb31-32"><a href="#cb31-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb31-33"><a href="#cb31-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Time used to:     fit the model =  6.06907 mins </span></span>
-<span id="cb31-34"><a href="#cb31-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   set up the parallelization = 1.4509 secs</span></span></code></pre></div>
+<span id="cb31-33"><a href="#cb31-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Time used to:     fit the model =  7.11112 mins </span></span>
+<span id="cb31-34"><a href="#cb31-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   set up the parallelization = 1.67003 secs</span></span></code></pre></div>
 <p>Let us compare the estimated results with the true values:</p>
 <div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">data.frame</span>(</span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">sigma =</span> <span class="fu">c</span>(sigma, fit_2d<span class="sc">$</span>matern_coeff<span class="sc">$</span>random_effects[<span class="dv">2</span>]), </span>
@@ -956,7 +956,7 @@ function, to check the order of the rational approximation of the
 <span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Total time</span></span>
 <span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(fit_2d<span class="sc">$</span>fitting_time)</span>
-<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Time difference of 6.069076 mins</span></span></code></pre></div>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Time difference of 7.111126 mins</span></span></code></pre></div>
 </div>
 <div id="references" class="section level2 unnumbered">
 <h2 class="unnumbered">References</h2>
