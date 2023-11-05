@@ -10,11 +10,12 @@ cross_validation(
   scores = c("mse", "crps", "scrps", "dss"),
   cv_type = c("k-fold", "loo", "lpo"),
   k = 5,
-  percentage = 30,
+  percentage = 20,
   number_folds = 10,
   n_samples = 1000,
   return_scores_folds = FALSE,
   orientation_results = c("negative", "positive"),
+  include_best = TRUE,
   train_test_indexes = NULL,
   return_train_test = FALSE,
   parallelize_RP = FALSE,
@@ -28,7 +29,7 @@ cross_validation(
 \arguments{
 \item{models}{A fitted model obtained from calling the \code{bru()} function or a list of models fitted with the \code{bru()} function.}
 
-\item{model_names}{A vector containing the names of the models to appear in the returned \code{data.frame}. If \code{NULL}, the names will be of the form \verb{Model 1}, \verb{Model 2}, and so on.}
+\item{model_names}{A vector containing the names of the models to appear in the returned \code{data.frame}. If \code{NULL}, the names will be of the form \verb{Model 1}, \verb{Model 2}, and so on. By default, it will try to obtain the name from the models list.}
 
 \item{scores}{A vector containing the scores to be computed. The options are "mse", "crps", "scrps" and "dss". By default, all scores are computed.}
 
@@ -48,6 +49,8 @@ with the number of folds to be done. The default is \code{k-fold}.}
 
 \item{orientation_results}{character vector. The options are "negative" and "positive". If "negative", the smaller the scores the better. If "positive", the larger the scores the better.}
 
+\item{include_best}{Should a row indicating which model was the best for each score be included?}
+
 \item{train_test_indexes}{A list containing two entries \code{train}, which is a list whose elements are vectors of indexes of the training data, and \code{test}, which is a list whose elements are vectors of indexes of the test data.
 Typically this will be returned list obtained by setting the argument \code{return_train_test} to \code{TRUE}.}
 
@@ -63,7 +66,7 @@ Typically this will be returned list obtained by setting the argument \code{retu
 
 \item{print}{Should partial results be printed throughout the computation?}
 
-\item{fit_verbose}{Should INLA's run during cross-validation be verbose? Default is FALSE}
+\item{fit_verbose}{Should INLA's run during cross-validation be verbose?}
 }
 \value{
 A data.frame with the fitted models and the corresponding scores.

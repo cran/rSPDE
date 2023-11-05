@@ -3,6 +3,7 @@
 \docType{package}
 \name{rSPDE}
 \alias{rSPDE}
+\alias{rSPDE-package}
 \title{Rational approximations of fractional SPDEs.}
 \description{
 \code{rSPDE} is used for approximating fractional elliptic SPDEs
@@ -16,14 +17,14 @@ fractional operator, and allows for computationally efficient
 inference and simulation.
 
 The main functions for computing rational approximation objects are:
-\itemize{
+\describe{
 \item{\code{\link[=fractional.operators]{fractional.operators()}}}{works for general
 rational operators}
 \item{\code{\link[=matern.operators]{matern.operators()}}}{ works for random fields with
 stationary Matern covariance functions}
 \item{\code{\link[=spde.matern.operators]{spde.matern.operators()}}}{ works for random fields with
 defined as solutions to a possibly non-stationary Matern-type SPDE model.}
-\item{\code{\link[=rspde.matern]{rspde.matern()}}} {R-INLA implementation of the
+\item{\code{\link[=rspde.matern]{rspde.matern()}}}{R-INLA implementation of the
 covariance-based rational approximation for random fields with
 stationary Matern covariance functions}
 }
