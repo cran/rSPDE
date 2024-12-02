@@ -47,17 +47,17 @@ for rSPDE models with integer smoothness based on \code{inla.mesh} or
 \examples{
 \donttest{ #tryCatch version
 tryCatch({
-if (requireNamespace("fmesher", quietly = TRUE)){
-library(fmesher)
+if (requireNamespace("fmesher", quietly = TRUE)) {
+  library(fmesher)
 
-set.seed(123)
-loc <- matrix(runif(100 * 2) * 100, 100, 2)
-mesh <- fm_mesh_2d(
-  loc = loc,
-  cutoff = 50,
-  max.edge = c(50, 500)
-)
-A <- spde.make.A(mesh, loc = loc)
+  set.seed(123)
+  loc <- matrix(runif(100 * 2) * 100, 100, 2)
+  mesh <- fm_mesh_2d(
+    loc = loc,
+    cutoff = 50,
+    max.edge = c(50, 500)
+  )
+  A <- spde.make.A(mesh, loc = loc)
 }
 #stable.tryCatch
 }, error = function(e){print("Could not run the example")})
